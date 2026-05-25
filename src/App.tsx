@@ -259,11 +259,11 @@ export default function App() {
           backgroundImage: "url('/src/assets/images/ribbon_backdrop_1779651790316.png')",
           opacity: 0.15,
           filter: "blur(48px)",
-          transform: "scale(1.15)", // Premium scale preventing white corner halo bleeding
+          transform: "scale(1.15)",
         }}
       />
 
-      {/* Frosted glass backdrop layer overlaying the background image under content */}
+      {/* Frosted glass backdrop layer — backdrop-blur removed to prevent modal stacking context issue */}
       <div className="absolute inset-0 bg-white/5 pointer-events-none z-0" />
 
       {/* 220px Fixed Left Sidebar */}
