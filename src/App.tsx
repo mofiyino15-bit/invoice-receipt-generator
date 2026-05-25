@@ -264,7 +264,7 @@ export default function App() {
       />
 
       {/* Frosted glass backdrop layer overlaying the background image under content */}
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-[8px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-white/5 pointer-events-none z-0" />
 
       {/* 220px Fixed Left Sidebar */}
       <Sidebar
