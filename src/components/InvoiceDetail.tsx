@@ -1,6 +1,7 @@
 import { ArrowLeft, Mail, CheckCircle2, FileDown, Clock, ShieldCheck, ClipboardCheck, ArrowUpRight, MoreVertical, X, Send, Copy, Check } from "lucide-react";
 import { Invoice, Client, formatCurrency, formatCurrencyConverted, ActivityLog } from "../types";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import BokLogo from "./BokLogo";
 
 interface InvoiceDetailProps {
@@ -14,7 +15,7 @@ interface InvoiceDetailProps {
   activeCurrency?: string;
 }
 
-export default function In voiceDetail({
+export default function InvoiceDetail({
   invoiceId,
   invoices,
   clients,
@@ -188,7 +189,7 @@ export default function In voiceDetail({
                 <p className="px-3.5 py-1 text-xs font-bold text-grey-400 uppercase tracking-widest border-b border-grey-100 mb-1">
                   Change Status
                 </p>
-                
+
                 {invoice.status !== "Overdue" && (
                   <button
                     onClick={() => {
@@ -201,7 +202,7 @@ export default function In voiceDetail({
                   </button>
                 )}
 
-                 {invoice.status !== "Due Today" && (
+                {invoice.status !== "Due Today" && (
                   <button
                     onClick={() => {
                       onUpdateInvoiceStatus(invoice.id, "Due Today");
@@ -269,10 +270,10 @@ export default function In voiceDetail({
 
       {/* Main Structural Layout Grid (col-span-8 detailed invoice paper, col-span-4 detailed activity logs) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" id="detail-structural-grid">
-        
+
         {/* Core Invoice Card (Left, span-8) */}
         <div className="lg:col-span-8 bg-white rounded-2xl border-[0.5px] border-grey-200/60 p-8 sm:p-10 space-y-8" id="invoice-paper-sheet">
-          
+
           {/* Bok Heading Header row */}
           <div className="flex flex-col sm:flex-row justify-between gap-6 pb-6 border-b border-grey-50">
             <div>
@@ -291,7 +292,7 @@ export default function In voiceDetail({
 
           {/* Billed From & Billed To addresses */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pb-6 border-b border-grey-50 text-sm">
-            
+
             {/* From */}
             <div className="space-y-1">
               <span className="text-xs font-semibold text-grey-400 uppercase tracking-widest font-sans block mb-2">Billed From</span>
@@ -383,7 +384,7 @@ export default function In voiceDetail({
                 <span>Subtotal</span>
                 <span className="font-bold text-grey-900 font-sans text-sm">{formatCurrencyConverted(subtotal, clientCurrency, activeCurrency)}</span>
               </div>
-              
+
               {invoice.hasTax && (
                 <div className="flex items-center justify-between text-grey-500">
                   <span>VAT / Local Tax ({invoice.taxRate}%)</span>
@@ -407,13 +408,13 @@ export default function In voiceDetail({
 
         {/* Dynamic Activity Log Panel (Right, span-4) */}
         <div className="lg:col-span-4 space-y-6" id="detail-activity-timeline-sidebar">
-          
+
           {/* Timeline Wrapper Card */}
           <div className="bg-white rounded-xl border border-grey-200/60 p-6 space-y-4">
             <h3 className="text-sm font-bold text-grey-900 uppercase tracking-wider pb-2 border-b border-grey-50">
               Invoice History Log
             </h3>
-            
+
             <div className="relative border-l-2 border-grey-100 ml-2.5 pl-5 space-y-6 text-xs text-left" id="timeline-flow">
               {invoice.activityLog.map((log) => {
                 const isPaidType = log.action.includes("Paid") || log.action.includes("Payment");
@@ -423,7 +424,7 @@ export default function In voiceDetail({
                   <div key={log.id} className="relative group" id={`timeline-entry-${log.id}`}>
                     {/* Circle Node visual */}
                     <span className={`absolute -left-[27px] top-0 p-0.5 rounded-full border-2 border-white ${
-                      isPaidType 
+                      isPaidType
                         ? "bg-green-500 text-white"
                         : isReminder
                         ? "bg-amber-500 text-white"
@@ -457,7 +458,7 @@ export default function In voiceDetail({
           {/* Quick automation rules checklist overview */}
           <div className="bg-white rounded-xl border border-grey-100 p-5 space-y-3 font-secondary text-xs">
             <h4 className="font-bold text-grey-900 uppercase">Reminders Configuration</h4>
-            
+
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <input
@@ -507,8 +508,8 @@ export default function In voiceDetail({
 
       </div>
 
-      {/* PDF PRINT DESIGN MODAL OVERLAY */}
-      {isPdfModalOpen && (
+      {/* PDF PRINT DESIGN MODAL — rendered via portal to escape stacking context */}
+      {isPdfModalOpen && createPortal(
         <div
           role="dialog"
           id="invoice-pdf-modal-overlay"
@@ -616,7 +617,7 @@ export default function In voiceDetail({
             {/* PDF Viewport Document Page Area (Scrollable background mimicking layout paper) */}
             <div className="flex-1 overflow-y-auto p-8 bg-white flex justify-center py-10" id="modal-pdf-scroll-viewport">
               {/* Actual virtual printed sheet */}
-              <div 
+              <div
                 id="modal-pdf-paper-plate"
                 className="bg-white text-grey-900 p-12 sm:p-14 border-[0.5px] border-grey-200/50 aspect-[1/1.4] w-full max-w-[210mm] min-h-[297mm] flex flex-col justify-between font-sans relative text-left select-text"
               >
@@ -733,7 +734,7 @@ export default function In voiceDetail({
                         <span>Items Subtotal</span>
                         <span className="font-bold text-grey-950 font-sans">{formatCurrencyConverted(subtotal, clientCurrency, activeCurrency)}</span>
                       </div>
-                      
+
                       {invoice.hasTax && (
                         <div className="flex items-center justify-between text-grey-550">
                           <span>Value Added Tax ({invoice.taxRate}%)</span>
@@ -775,7 +776,8 @@ export default function In voiceDetail({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
